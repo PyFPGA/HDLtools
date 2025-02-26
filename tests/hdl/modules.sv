@@ -1,4 +1,5 @@
-// input|output|inout [reg|wire|logic] [signed|unsigned] [range] name [dimensions] [= value]
+// parameter [int|bit|logic|real|string] "[packed]" <name> = <value>
+// input|output|inout [reg|wire|logic] [signed|unsigned] "[packed]" <name> "[unpacked]" [= <value>]
 
 /*
   Empty module
@@ -8,11 +9,18 @@ module mod_empty ();
 endmodule
 
 /*
+  Commented module
+*/
+
+//module mod_commented ();
+//endmodule
+
+/*
   Module without parameters
 */
 
 module mod_nopar (
-  input                     in00 = 1'b0,
+  input                     in00,
   input  reg                in01,
   input  wire               in02,
   input  logic              in03,
@@ -174,39 +182,38 @@ module mod_nopar (
   inout  reg   signed [7:0] io29 [1:8],
   inout  wire  signed [7:0] io30 [1:8][1:8],
   inout  logic signed [7:0] io31 [1:8][1:8],
-
-  inout                     io00            = 1'b0,
-  inout  reg                io01            = '0,
-  inout  wire               io02            = 1'b0,
-  inout  logic              io03            = '0,
-  inout        signed       io04            = 1'b0,
-  inout  reg   signed       io05            = '0,
-  inout  wire  signed       io06            = 1'b0,
-  inout  logic signed       io07            = '0,
-  inout               [7:0] io08            = 8'b0,
-  inout  reg          [7:0] io09            = '0,
-  inout  wire         [7:0] io10            = 8'b0,
-  inout  logic        [7:0] io11            = '0,
-  inout        signed [7:0] io12            = 8'b0,
-  inout  reg   signed [7:0] io13            = '0,
-  inout  wire  signed [7:0] io14            = 8'b0,
-  inout  logic signed [7:0] io15            = '0,
-  inout                     io16 [1:8]      = '{default:0},
-  inout  reg                io17 [1:8]      = '{default:0},
-  inout  wire               io18 [1:8][1:8] = '{default:0},
-  inout  logic              io19 [1:8][1:8] = '{default:0},
-  inout        signed       io20 [1:8]      = '{default:0},
-  inout  reg   signed       io21 [1:8]      = '{default:0},
-  inout  wire  signed       io22 [1:8][1:8] = '{default:0},
-  inout  logic signed       io23 [1:8][1:8] = '{default:0},
-  inout               [7:0] io24 [1:8]      = '{default:0},
-  inout  reg          [7:0] io25 [1:8]      = '{default:0},
-  inout  wire         [7:0] io26 [1:8][1:8] = '{default:0},
-  inout  logic        [7:0] io27 [1:8][1:8] = '{default:0},
-  inout        signed [7:0] io28 [1:8]      = '{default:0},
-  inout  reg   signed [7:0] io29 [1:8]      = '{default:0},
-  inout  wire  signed [7:0] io30 [1:8][1:8] = '{default:0},
-  inout  logic signed [7:0] io31 [1:8][1:8] = '{default:0}
+  inout                     io32            = 1'b0,
+  inout  reg                io33            = '0,
+  inout  wire               io34            = 1'b0,
+  inout  logic              io35            = '0,
+  inout        signed       io36            = 1'b0,
+  inout  reg   signed       io37            = '0,
+  inout  wire  signed       io38            = 1'b0,
+  inout  logic signed       io39            = '0,
+  inout               [7:0] io40            = 8'b0,
+  inout  reg          [7:0] io41            = '0,
+  inout  wire         [7:0] io42            = 8'b0,
+  inout  logic        [7:0] io43            = '0,
+  inout        signed [7:0] io44            = 8'b0,
+  inout  reg   signed [7:0] io45            = '0,
+  inout  wire  signed [7:0] io46            = 8'b0,
+  inout  logic signed [7:0] io47            = '0,
+  inout                     io48 [1:8]      = '{default:0},
+  inout  reg                io49 [1:8]      = '{default:0},
+  inout  wire               io50 [1:8][1:8] = '{default:0},
+  inout  logic              io51 [1:8][1:8] = '{default:0},
+  inout        signed       io52 [1:8]      = '{default:0},
+  inout  reg   signed       io53 [1:8]      = '{default:0},
+  inout  wire  signed       io54 [1:8][1:8] = '{default:0},
+  inout  logic signed       io55 [1:8][1:8] = '{default:0},
+  inout               [7:0] io56 [1:8]      = '{default:0},
+  inout  reg          [7:0] io57 [1:8]      = '{default:0},
+  inout  wire         [7:0] io58 [1:8][1:8] = '{default:0},
+  inout  logic        [7:0] io59 [1:8][1:8] = '{default:0},
+  inout        signed [7:0] io60 [1:8]      = '{default:0},
+  inout  reg   signed [7:0] io61 [1:8]      = '{default:0},
+  inout  wire  signed [7:0] io62 [1:8][1:8] = '{default:0},
+  inout  logic signed [7:0] io63 [1:8][1:8] = '{default:0}
 );
 
   always_comb begin
@@ -352,10 +359,10 @@ endmodule
 module mod_param #(
   parameter              INTPARAM1 = 8,
   parameter int          INTPARAM2 = 8,
-  parameter        [3:0] VECPARAM2 = 4'b1010,
-  parameter logic  [3:0] VECPARAM1 = '1,
-  parameter bit          BITPARAM2 = 1'b0,
-  parameter bit    [3:0] BITPARAM1 = 4'b1010,
+  parameter        [3:0] VECPARAM1 = 4'b1010,
+  parameter logic  [3:0] VECPARAM2 = '1,
+  parameter bit          BITPARAM1 = 1'b0,
+  parameter bit    [3:0] BITPARAM2 = 4'b1010,
   parameter string       STRPARAM1 = "test",
   parameter real         REAPARAM1 = 2.5
 )(
