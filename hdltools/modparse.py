@@ -5,42 +5,49 @@ import re
 
 class Modparse:
 
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self, fpath):
         self.modules = {}
+        with open(fpath, 'r') as f:
+            self.ftext = f.read()
+        self._remove_comments()
         self._parse()
 
-    def _remove_comments(self, content):
-        content = re.sub(r'//.*', '', content)
-        content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
-        return content
+    def _remove_comments(self):
+        self.ftext = re.sub(r'//.*', '', self.ftext)
+        self.ftext = re.sub(r'/\*.*?\*/', '', self.ftext, flags=re.DOTALL)
 
     def _parse(self):
-        with open(self.file_path, 'r') as f:
-            content = f.read()
-        content = self._remove_comments(content)
-        pattern = r'module\s+(\w+)\s*(#\((.*?)\))?\s*\((.*?)\)\s*;'
-        matches = re.findall(pattern, content, re.DOTALL)
-        for match in matches:
-            module_name = match[0]
-            raw_parameters = match[2] if match[2] else ''
-            raw_ports = match[3] if match[3] else ''
-            parameters = self._extract_parameters(raw_parameters)
-            ports = self._extract_ports(raw_ports)
-            self.modules[module_name] = {}
-            if parameters:
-                self.modules[module_name]['parameters'] = parameters
+        pattern = (
+            r'module\s+'
+            r'(\w+)\s*'             # name
+            r'(?:#\(([^)]+)\))?\s*' # params
+            r'\(([^)]*)\)\s*'       # ports
+            r';\s*'
+            r'.*?'                  # body
+            r'endmodule'
+        )
+        matches = re.findall(pattern, self.ftext, re.DOTALL)
+        for name, params, ports in matches:
+            self.modules[name] = {}
+            if params:
+                self.modules[name]['params'] = self._extract_params(params)
             if ports:
-                self.modules[module_name]['ports'] = ports
+                self.modules[name]['ports'] = self._extract_ports(ports)
 
-    def _extract_parameters(self, text):
-        pattern = r'parameter\s+(int|bit|logic|real|string)?\s*(\[[^\]]*\])?\s*(\w+)\s*=\s*([^,;]+)'
+    def _extract_params(self, text):
+        pattern = (
+            r'parameter\s+'
+            r'(int|bit|logic|real|string)?\s*' # type
+            r'(\[[^\]]*\])?\s*'                # packed
+            r'(\w+)\s*'                        # name
+            r'=\s*([^,;]+)'                    # value
+        )
         matches = re.findall(pattern, text)
         params = {}
-        for param_type, packed, name, value in matches:
+        for ptype, packed, name, value in matches:
             params[name] = {}
-            if param_type:
-                params[name]['type'] = param_type
+            if ptype:
+                params[name]['type'] = ptype
             if packed:
                 params[name]['packed'] = packed
             if value:
@@ -48,22 +55,30 @@ class Modparse:
         return params
 
     def _extract_ports(self, text):
-        pattern = r'(input|output|inout)\s+(reg|wire|logic)?\s*(signed|unsigned)?\s*((?:\[[^\]]*\])*)\s*(\w+)\s*((?:\[[^\]]*\])*)\s*(?:=\s*([^,;]+))?'
+        pattern = (
+            r'(input|output|inout)\s+' # direction
+            r'(reg|wire|logic)?\s*'    # type
+            r'(signed|unsigned)?\s*'   # sign
+            r'((?:\[[^\]]*\])*)\s*'    # packed
+            r'(\w+)\s*'                # name
+            r'((?:\[[^\]]*\])*)\s*'    # unpacked
+            r'(?:=\s*([^,;]+))?'       # default
+        )
         matches = re.findall(pattern, text)
         grouped_ports = {'inputs': {}, 'outputs': {}, 'inouts': {}}
-        for direction, var_type, sign, packed, name, unpacked, default in matches:
-            port_data = {}
-            if var_type:
-                port_data['type'] = var_type
+        for pdir, ptype, sign, packed, name, unpacked, default in matches:
+            data = {}
+            if ptype:
+                data['type'] = ptype
             if sign:
-                port_data['sign'] = sign
+                data['sign'] = sign
             if packed:
-                port_data['packed'] = packed
+                data['packed'] = packed
             if unpacked:
-                port_data['unpacked'] = unpacked
+                data['unpacked'] = unpacked
             if default:
-                port_data['default'] = default.strip()
-            grouped_ports[direction + 's'][name] = port_data  
+                data['default'] = default.strip()
+            grouped_ports[pdir + 's'][name] = data
         return {k: v for k, v in grouped_ports.items() if v}
 
     def get_modules(self):
