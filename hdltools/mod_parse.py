@@ -15,7 +15,7 @@ import re
 from hdltools.hdl_sanitize import HdlSanitize
 
 
-class Modparse:
+class ModParse:
     """Extract information about parameters and ports from modules."""
 
     def __init__(self, fpath):
@@ -101,5 +101,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('svfile')
     args = parser.parse_args()
-    modules = Modparse(args.svfile)
+    modules = ModParse(args.svfile)
     print(modules)
