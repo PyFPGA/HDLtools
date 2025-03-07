@@ -12,7 +12,7 @@ import argparse
 import json
 import re
 
-from hdl_sanitize import HdlSanitize
+from hdltools.hdl_sanitize import HdlSanitize
 
 
 class Modparse:
