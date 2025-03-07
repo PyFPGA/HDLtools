@@ -1,0 +1,26 @@
+name: 'test'
+
+on:
+  push:
+    paths:
+      - 'pyfpga/**'
+      - 'tests/**'
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        pyver: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    runs-on: ubuntu-latest
+    name: ${{ matrix.pyver }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.pyver }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.pyver }}
+    - name: Install dependencies
+      run: pip install pytest
+    - name: Run tests
+      run: make test
