@@ -1,32 +1,38 @@
+#
+# Copyright (C) 2025 HDLtools Project
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+"""
+Parses SystemVerilog modules to extract information about parameters and ports.
+"""
+
 import argparse
 import json
 import re
 
+from hdl_sanitize import HdlSanitize
+
 
 class Modparse:
+    """Extract information about parameters and ports from modules."""
 
     def __init__(self, fpath):
         self.modules = {}
-        with open(fpath, 'r') as f:
-            self.ftext = f.read()
-        self._remove_comments()
+        hdl = HdlSanitize(fpath)
+        self.code = hdl.get_code()
         self._parse()
-
-    def _remove_comments(self):
-        self.ftext = re.sub(r'//.*', '', self.ftext)
-        self.ftext = re.sub(r'/\*.*?\*/', '', self.ftext, flags=re.DOTALL)
 
     def _parse(self):
         pattern = (
             r'module\s+'
-            r'(\w+)\s*'             # name
-            r'(?:#\(([^)]+)\))?\s*' # params
-            r'\(([^)]*)\)\s*'       # ports
-            r';\s*'
-            r'.*?'                  # body
-            r'endmodule'
+            r'(\w+)\s*'        # name
+            r'(#\(.*?\))?\s*'  # params
+            r'\((.*?)\)\s*;'   # ports
+            r'.*?endmodule'
         )
-        matches = re.findall(pattern, self.ftext, re.DOTALL)
+        matches = re.findall(pattern, self.code, re.DOTALL)
         for name, params, ports in matches:
             self.modules[name] = {}
             if params:
@@ -34,13 +40,14 @@ class Modparse:
             if ports:
                 self.modules[name]['ports'] = self._extract_ports(ports)
 
-    def _extract_params(self, text):
+    @staticmethod
+    def _extract_params(text):
         pattern = (
             r'parameter\s+'
-            r'(int|bit|logic|real|string)?\s*' # type
-            r'(\[[^\]]*\])?\s*'                # packed
-            r'(\w+)\s*'                        # name
-            r'=\s*([^,;]+)'                    # value
+            r'(int|bit|logic|real|string)?\s*'  # type
+            r'(\[[^\]]*\])?\s*'                 # packed
+            r'(\w+)\s*'                         # name
+            r'=\s*([^,;]+)'                     # value
         )
         matches = re.findall(pattern, text)
         params = {}
@@ -54,15 +61,16 @@ class Modparse:
                 params[name]['value'] = value.strip()
         return params
 
-    def _extract_ports(self, text):
+    @staticmethod
+    def _extract_ports(text):
         pattern = (
-            r'(input|output|inout)\s+' # direction
-            r'(reg|wire|logic)?\s*'    # type
-            r'(signed|unsigned)?\s*'   # sign
-            r'((?:\[[^\]]*\])*)\s*'    # packed
-            r'(\w+)\s*'                # name
-            r'((?:\[[^\]]*\])*)\s*'    # unpacked
-            r'(?:=\s*([^,;]+))?'       # default
+            r'(input|output|inout)\s+'  # direction
+            r'(reg|wire|logic)?\s*'     # type
+            r'(signed|unsigned)?\s*'    # sign
+            r'((?:\[[^\]]*\])*)\s*'     # packed
+            r'(\w+)\s*'                 # name
+            r'((?:\[[^\]]*\])*)\s*'     # unpacked
+            r'(?:=\s*([^,;]+))?'        # default
         )
         matches = re.findall(pattern, text)
         grouped_ports = {'inputs': {}, 'outputs': {}, 'inouts': {}}
@@ -82,13 +90,16 @@ class Modparse:
         return {k: v for k, v in grouped_ports.items() if v}
 
     def get_modules(self):
+        """Get a dict with data extracted from modules."""
         return self.modules
+
+    def __str__(self):
+        return json.dumps(self.modules, indent=2)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('svfile')
     args = parser.parse_args()
-    parser = Modparse(args.svfile)
-    modules = parser.get_modules()
-    print(json.dumps(modules, indent=2))
+    modules = Modparse(args.svfile)
+    print(modules)
