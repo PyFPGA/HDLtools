@@ -42,6 +42,7 @@ class ModParse:
 
     @staticmethod
     def _extract_params(text):
+        text = re.sub(r'[#()]', '', text)
         pattern = (
             r'parameter\s+'
             r'(int|bit|logic|real|string)?\s*'  # type
