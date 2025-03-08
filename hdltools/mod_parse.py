@@ -94,6 +94,14 @@ class ModParse:
         """Get a dict with data extracted from modules."""
         return self.modules
 
+    def get_module(self, module=None):
+        """Get a dict with data extracted from one module."""
+        if not module and len(self.modules) == 1:
+            return next(iter(self.modules.values()))
+        if module in self.modules:
+            return self.modules[module]
+        return None
+
     def __str__(self):
         return json.dumps(self.modules, indent=2)
 

@@ -13,14 +13,14 @@ def test_modules():
 
 def test_empty():
     vobj = ModParse(vfile)
-    modules = vobj.get_modules()
-    assert modules["mod_empty"] == {}
+    module = vobj.get_module('mod_empty')
+    assert module == {}
 
 
 def test_params():
     vobj = ModParse(vfile)
-    modules = vobj.get_modules()
-    assert 'params' in modules['mod_param']
+    module = vobj.get_module('mod_param')
+    assert 'params' in module
     params = {}
     params["INTPARAM1"] = {"value": "8"}
     params["INTPARAM2"] = {"type": "int", "value": "8"}
@@ -30,22 +30,23 @@ def test_params():
     params["BITPARAM2"] = {"type": "bit", "packed": "[3:0]", "value": "4'h3"}
     params["STRPARAM1"] = {"type": "string", "value": '"test"'}
     params["REAPARAM1"] = {"type": "real", "value": "2.5"}
-    assert modules["mod_param"]["params"] == params
+    assert module["params"] == params
 
 
 def test_ports():
     vobj = ModParse(vfile)
-    modules = vobj.get_modules()
-    assert 'ports' in modules['mod_param']
-    assert 'ports' in modules['mod_nopar']
+    module = vobj.get_module('mod_param')
+    assert 'ports' in module
     ports = {
         'inputs': {'data_in': {'packed': '[INTPARAM1-1:0]'}},
         'outputs': {'data_out': {'packed': '[INTPARAM1-1:0]'}}
     }
-    assert modules['mod_param']['ports'] == ports
-    assert modules['mod_nopar']['ports']['inputs'] == gen_ports('in')
-    assert modules['mod_nopar']['ports']['outputs'] == gen_ports('out')
-    assert modules['mod_nopar']['ports']['inouts'] == gen_ports('io')
+    assert module['ports'] == ports
+    module = vobj.get_module('mod_nopar')
+    assert 'ports' in module
+    assert module['ports']['inputs'] == gen_ports('in')
+    assert module['ports']['outputs'] == gen_ports('out')
+    assert module['ports']['inouts'] == gen_ports('io')
 
 
 def gen_ports(prefix):
