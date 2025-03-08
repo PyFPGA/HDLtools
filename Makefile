@@ -8,7 +8,7 @@ lint:
 	git diff --check --cached
 
 test:
-	PYTHONPATH=$(PWD) pytest
+	PYTHONPATH=$(PWD) pytest -vv
 
 clean:
 	py3clean .
