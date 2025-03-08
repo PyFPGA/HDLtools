@@ -39,8 +39,8 @@ def test_ports():
     assert 'ports' in modules['mod_param']
     assert 'ports' in modules['mod_nopar']
     ports = {
-      'inputs': {'data_in': {'packed': '[INTPARAM1-1:0]'}},
-      'outputs': {'data_out': {'packed': '[INTPARAM1-1:0]'}}
+        'inputs': {'data_in': {'packed': '[INTPARAM1-1:0]'}},
+        'outputs': {'data_out': {'packed': '[INTPARAM1-1:0]'}}
     }
     assert modules['mod_param']['ports'] == ports
     assert modules['mod_nopar']['ports']['inputs'] == gen_ports('in')
