@@ -2,4 +2,4 @@
 
 Scripts for automating HDL-related tasks.
 
-> **WARNING:** this project is in its very early stages (Feb 2025).
+> **NOTE:** this project is still in development but already functional (March 2025).
