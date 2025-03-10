@@ -90,6 +90,10 @@ class ModParse:
             grouped_ports[pdir + 's'][name] = data
         return {k: v for k, v in grouped_ports.items() if v}
 
+    def get_names(self):
+        """Get a list of modules names."""
+        return list(self.modules.keys())
+
     def get_modules(self):
         """Get a dict with data extracted from modules."""
         return self.modules
