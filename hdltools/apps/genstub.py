@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-"""This script generates an stub for the specified module."""
+"""This script generates a stub for the specified module."""
 
 import argparse
 import logging
@@ -36,10 +36,9 @@ if not args.top:
 module = modules.get_module(args.top)
 module['name'] = args.top
 module['suffix'] = args.suffix
-module['stub'] = True
 
 top = GenFile()
-top.render('module', module)
+top.render('stub', module)
 
 if not args.output:
     print(top)

@@ -38,7 +38,7 @@ module['name'] = args.top
 module['suffix'] = args.suffix
 
 top = GenFile()
-top.render('module', module)
+top.render('wrap', module)
 
 if not args.output:
     print(top)

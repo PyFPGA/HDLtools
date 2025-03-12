@@ -3,7 +3,7 @@
 {%- for direction, signals in ports.items() %}
   {%- for name, props in signals.items() %}
     {%- set dir = direction.rstrip('s') %}
-    {%- set type = props.type | default('') %}
+    {%- set type = "wire" %}
     {%- set packed = props.packed | default('') %}
     {%- set unpacked = props.unpacked | default('') %}
     {%- set port_str = dir ~ " " ~ type ~ " " ~ packed ~ " " ~ name ~ " " ~ unpacked %}
@@ -23,35 +23,14 @@ module {{ name }}{{ suffix }} {% if params -%}#(
 {%- endfor %}
 );
 
-{%- if stub %}
-  {%- if ports.outputs %}
-    {%- for name, props in ports.outputs.items() %}
-      {%- if props.type == "reg" %}
-  always_comb {{ name }} = '0;
-      {%- else %}
-  assign {{ name }} = '0;
-      {%- endif %}
-    {%- endfor %}
-  {%- endif %}
-  {%- if ports.inouts %}
-    {%- for name, props in ports.inouts.items() %}
-      {%- if props.type == "reg" %}
-  always_comb {{ name }} = 'Z;
-      {%- else %}
-  assign {{ name }} = 'Z;
-      {%- endif %}
-    {%- endfor %}
-  {%- endif %}
-{%- else %}
   {{ name }} {% if params %}#(
-  {%- for name, props in params.items() %}
+{%- for name, props in params.items() %}
     .{{ name }} ({{ name }}){% if not loop.last %},{% endif %}
-  {%- endfor %}
+{%- endfor %}
   ){% endif %} {{ name }} (
-  {%- for port_name in port_names %}
+{%- for port_name in port_names %}
     .{{ port_name }} ({{ port_name }}){% if not loop.last %},{% endif %}
-  {%- endfor %}
+{%- endfor %}
   );
-{%- endif %}
 
 endmodule
