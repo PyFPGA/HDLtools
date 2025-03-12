@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-"""This script generates a wrapper for the specified module."""
+"""This script generates a top-level for the specified module."""
 
 import argparse
 import logging
@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--top')
-parser.add_argument('--suffix', default='_wrap')
+parser.add_argument('--suffix')
+parser.add_argument('--type', choices=['top', 'stub', 'wrap'], default='top')
 parser.add_argument('--output')
 parser.add_argument('file')
 args = parser.parse_args()
@@ -35,7 +36,8 @@ if not args.top:
 
 module = modules.get_module(args.top)
 module['name'] = args.top
-module['suffix'] = args.suffix
+module['suffix'] = args.suffix or f'_{args.type}'
+module['type'] = args.type
 
 top = GenFile()
 top.render('module', module)

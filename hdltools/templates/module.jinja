@@ -22,8 +22,7 @@ module {{ name }}{{ suffix }} {% if params -%}#(
   {{ port }}{% if not loop.last %},{% endif %}
 {%- endfor %}
 );
-
-{%- if stub %}
+{% if type == "stub" %}
   {%- if ports.outputs %}
     {%- for name, props in ports.outputs.items() %}
       {%- if props.type == "reg" %}
@@ -42,7 +41,7 @@ module {{ name }}{{ suffix }} {% if params -%}#(
       {%- endif %}
     {%- endfor %}
   {%- endif %}
-{%- else %}
+{% elif type == "wrap" %}
   {{ name }} {% if params %}#(
   {%- for name, props in params.items() %}
     .{{ name }} ({{ name }}){% if not loop.last %},{% endif %}
@@ -52,6 +51,5 @@ module {{ name }}{{ suffix }} {% if params -%}#(
     .{{ port_name }} ({{ port_name }}){% if not loop.last %},{% endif %}
   {%- endfor %}
   );
-{%- endif %}
-
+{% endif %}
 endmodule
