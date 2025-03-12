@@ -4,9 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-"""This script checks differences between two Verilog modules."""
+"""This script compares two Verilog modules."""
 
 import argparse
+import difflib
+import json
 import logging
 import sys
 
@@ -37,4 +39,8 @@ if module1 == module2:
     logging.info('modules are equal')
 else:
     logging.error('modules have differences')
+    text1 = json.dumps(module1, indent=2, sort_keys=True).splitlines()
+    text2 = json.dumps(module2, indent=2, sort_keys=True).splitlines()
+    diff = difflib.unified_diff(text1, text2, lineterm='')
+    print("\n".join(diff))
     sys.exit(1)
