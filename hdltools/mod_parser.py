@@ -8,23 +8,20 @@
 Parses SystemVerilog modules to extract information about parameters and ports.
 """
 
-import argparse
-import json
 import re
 
-from hdltools.hdl_sanitize import HdlSanitize
-
-
-class ModParse:
+class ModParser:
     """Extract information about parameters and ports from modules."""
 
-    def __init__(self, fpath):
+    def __init__(self, code=''):
         self.modules = {}
-        hdl = HdlSanitize(fpath)
-        self.code = hdl.get_code()
-        self._parse()
+        self.code = code
 
-    def _parse(self):
+    def set_code(self, code):
+        """Sets the HDL code."""
+        self.code = code
+
+    def parse(self):
         pattern = (
             r'module\s+'
             r'(\w+)\s*'        # name
@@ -105,14 +102,3 @@ class ModParse:
         if module in self.modules:
             return self.modules[module]
         return None
-
-    def __str__(self):
-        return json.dumps(self.modules, indent=2)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('svfile')
-    args = parser.parse_args()
-    modules = ModParse(args.svfile)
-    print(modules)
