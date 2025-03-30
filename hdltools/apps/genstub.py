@@ -6,41 +6,45 @@
 
 """This script generates a stub for the specified module."""
 
-import argparse
 import logging
 import sys
 
-from hdltools.mod_parse import ModParse
-from hdltools.gen_file import GenFile
-
+from hdltools.cli_parser import cli_parser
+from hdltools.hdl_reader import HDLReader
+from hdltools.mod_parser import ModParser
+from hdltools.hdl_writer import HDLWriter
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--top')
-parser.add_argument('--suffix', default='_stub')
-parser.add_argument('--output')
-parser.add_argument('file')
-args = parser.parse_args()
+args = cli_parser('stub')
 
-modules = ModParse(args.file)
-names = modules.get_names()
+hdl_reader = HDLReader()
+try:
+    hdl_reader.read_file(args.file)
+except:
+    logging.error('file not found')
+    sys.exit(1)
+hdl_code = hdl_reader.get_code()
 
-if not len(names) or (args.top and args.top not in names):
+mod_parser = ModParser(hdl_code)
+mod_parser.parse()
+
+module_names = mod_parser.get_names()
+if not len(module_names) or (args.top and args.top not in module_names):
     logging.error('module not found')
     sys.exit(1)
 
 if not args.top:
-    args.top = names[0]
+    args.top = module_names[0]
 
-module = modules.get_module(args.top)
-module['name'] = args.top
-module['suffix'] = args.suffix
+module_info = mod_parser.get_module(args.top)
+module_info['name'] = args.top
+module_info['suffix'] = args.suffix
 
-top = GenFile()
-top.render('stub', module)
+hdl_writer = HDLWriter()
+hdl_writer.render('stub', module_info)
 
 if not args.output:
-    print(top)
+    print(hdl_writer.get_code())
 else:
-    top.write(args.output)
+    hdl_writer.write_file(args.output)

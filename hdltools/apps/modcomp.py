@@ -6,41 +6,89 @@
 
 """This script compares two Verilog modules."""
 
-import argparse
 import difflib
-import json
 import logging
 import sys
 
-from hdltools.mod_parse import ModParse
-
+from hdltools.cli_parser import cli_parser
+from hdltools.hdl_reader import HDLReader
+from hdltools.mod_parser import ModParser
+from hdltools.hdl_writer import HDLWriter
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--top1')
-parser.add_argument('--top2')
-parser.add_argument('files', nargs=2)
-args = parser.parse_args()
+args = cli_parser('comp')
 
-modules = ModParse(args.files[0])
-module1 = modules.get_module(args.top1)
-if not module1:
+#
+# Module 1
+#
+
+hdl_reader = HDLReader()
+try:
+    hdl_reader.read_file(args.files[0])
+except:
+    logging.error('first file not found')
+    sys.exit(1)
+hdl_code = hdl_reader.get_code()
+
+mod_parser = ModParser(hdl_code)
+mod_parser.parse()
+
+module_names = mod_parser.get_names()
+if not len(module_names) or (args.top1 and args.top1 not in module_names):
     logging.error('first module not found')
     sys.exit(1)
 
-modules = ModParse(args.files[1])
-module2 = modules.get_module(args.top2)
-if not module2:
+if not args.top1:
+    args.top1 = module_names[0]
+
+module_info = mod_parser.get_module(args.top1)
+module_info['name'] = args.top1
+
+hdl_writer = HDLWriter()
+hdl_writer.render('comp', module_info)
+
+module1 = hdl_writer.get_code()
+
+#
+# Module 2
+#
+
+hdl_reader = HDLReader()
+try:
+    hdl_reader.read_file(args.files[1])
+except:
+    logging.error('second file not found')
+    sys.exit(1)
+hdl_code = hdl_reader.get_code()
+
+mod_parser = ModParser(hdl_code)
+mod_parser.parse()
+
+module_names = mod_parser.get_names()
+if not len(module_names) or (args.top2 and args.top2 not in module_names):
     logging.error('second module not found')
     sys.exit(1)
+
+if not args.top2:
+    args.top2 = module_names[0]
+
+module_info = mod_parser.get_module(args.top2)
+module_info['name'] = args.top2
+
+hdl_writer = HDLWriter()
+hdl_writer.render('comp', module_info)
+
+module2 = hdl_writer.get_code()
+
+#
+# Diff
+#
 
 if module1 == module2:
     logging.info('modules are equal')
 else:
     logging.error('modules have differences')
-    text1 = json.dumps(module1, indent=2, sort_keys=True).splitlines()
-    text2 = json.dumps(module2, indent=2, sort_keys=True).splitlines()
-    diff = difflib.unified_diff(text1, text2, lineterm='')
+    diff = list(difflib.ndiff(module1.splitlines(), module2.splitlines()))
     print("\n".join(diff))
     sys.exit(1)

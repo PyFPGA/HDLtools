@@ -22,6 +22,7 @@ class ModParser:
         self.code = code
 
     def parse(self):
+        """Parse the code."""
         pattern = (
             r'module\s+'
             r'(\w+)\s*'        # name

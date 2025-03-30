@@ -31,5 +31,5 @@ class HDLWriter:
             fobj.write(self.code)
 
     def get_code(self):
-        """Get the generated code."""
+        """Returns the generated code."""
         return self.code
