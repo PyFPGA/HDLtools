@@ -21,8 +21,8 @@ args = cli_parser('stub')
 hdl_reader = HDLReader()
 try:
     hdl_reader.read_file(args.file)
-except:
-    logging.error('file not found')
+except (OSError, UnicodeDecodeError) as e:
+    logging.error(f'{e}')
     sys.exit(1)
 hdl_code = hdl_reader.get_code()
 

@@ -10,6 +10,7 @@ Parses SystemVerilog modules to extract information about parameters and ports.
 
 import re
 
+
 class ModParser:
     """Extract information about parameters and ports from modules."""
 

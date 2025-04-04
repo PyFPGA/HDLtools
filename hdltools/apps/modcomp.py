@@ -26,8 +26,8 @@ args = cli_parser('comp')
 hdl_reader = HDLReader()
 try:
     hdl_reader.read_file(args.files[0])
-except:
-    logging.error('first file not found')
+except (OSError, UnicodeDecodeError) as e:
+    logging.error(f'{e}')
     sys.exit(1)
 hdl_code = hdl_reader.get_code()
 
@@ -57,8 +57,8 @@ module1 = hdl_writer.get_code()
 hdl_reader = HDLReader()
 try:
     hdl_reader.read_file(args.files[1])
-except:
-    logging.error('second file not found')
+except (OSError, UnicodeDecodeError) as e:
+    logging.error(f'{e}')
     sys.exit(1)
 hdl_code = hdl_reader.get_code()
 
