@@ -27,9 +27,13 @@ class HDLReader:
         """Directly sets the HDL code."""
         self.code = code
 
-    def get_code(self, is_vhdl=False):
+    def is_vhdl(self):
+        """Return True if the code seems to be VHDL."""
+        return 'endmodule' not in self.code.lower()
+
+    def get_code(self):
         """Retrieves the sanitized HDL code."""
-        if is_vhdl:
+        if self.is_vhdl():
             text = re.sub(r'--[^\n]*', '', self.code)
         else:
             text = re.sub(r'//[^\n]*', '', self.code)
