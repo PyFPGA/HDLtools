@@ -54,8 +54,11 @@ class HDLController:
         return self.writer.get_code()
 
     def write(self, filepath):
-        """Writes the generated HDL code to the specified file."""
-        self.writer.write_file(filepath)
+        """Writes the generated HDL code."""
+        if not filepath:
+            print(self.writer.get_code())
+        else:
+            self.writer.write_file(filepath)
 
     @staticmethod
     def _error(message, ecode=1):
