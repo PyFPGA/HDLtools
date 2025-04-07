@@ -1,24 +1,33 @@
 from pathlib import Path
 
-from hdltools.mod_parse import ModParse
+from hdltools.hdl_reader import HDLReader
+from hdltools.mod_parser import ModParser
 
-vfile = Path(__file__).parent.resolve() / 'hdl/modules.sv'
+
+def get_vlog():
+    filepath = Path(__file__).parent.resolve() / 'hdl' / 'modules.sv'
+    reader = HDLReader()
+    reader.read_file(filepath)
+    return reader.get_code()
 
 
 def test_modules():
-    vobj = ModParse(vfile)
+    vobj = ModParser(get_vlog())
+    vobj.parse()
     modules = vobj.get_modules()
     assert len(modules) == 3
 
 
 def test_empty():
-    vobj = ModParse(vfile)
+    vobj = ModParser(get_vlog())
+    vobj.parse()
     module = vobj.get_module('mod_empty')
     assert module == {}
 
 
 def test_params():
-    vobj = ModParse(vfile)
+    vobj = ModParser(get_vlog())
+    vobj.parse()
     module = vobj.get_module('mod_param')
     assert 'params' in module
     params = {}
@@ -34,7 +43,8 @@ def test_params():
 
 
 def test_ports():
-    vobj = ModParse(vfile)
+    vobj = ModParser(get_vlog())
+    vobj.parse()
     module = vobj.get_module('mod_param')
     assert 'ports' in module
     ports = {
