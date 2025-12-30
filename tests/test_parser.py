@@ -1,24 +1,31 @@
+import pytest
+
 from pathlib import Path
-
-from hdltools.mod_parse import ModParse
-
-vfile = Path(__file__).parent.resolve() / 'hdl/modules.sv'
+from hdltools.hdl_reader import HDLReader
+from hdltools.mod_parser import ModParser
 
 
-def test_modules():
-    vobj = ModParse(vfile)
+@pytest.fixture
+def vobj():
+    filepath = Path(__file__).parent.resolve() / 'hdl' / 'modules.sv'
+    reader = HDLReader()
+    reader.read_file(filepath)
+    parser = ModParser(reader.get_code())
+    parser.parse()
+    return parser
+
+
+def test_modules(vobj):
     modules = vobj.get_modules()
     assert len(modules) == 3
 
 
-def test_empty():
-    vobj = ModParse(vfile)
+def test_empty(vobj):
     module = vobj.get_module('mod_empty')
     assert module == {}
 
 
-def test_params():
-    vobj = ModParse(vfile)
+def test_params(vobj):
     module = vobj.get_module('mod_param')
     assert 'params' in module
     params = {}
@@ -33,8 +40,7 @@ def test_params():
     assert module["params"] == params
 
 
-def test_ports():
-    vobj = ModParse(vfile)
+def test_ports(vobj):
     module = vobj.get_module('mod_param')
     assert 'ports' in module
     ports = {
