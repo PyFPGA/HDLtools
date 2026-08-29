@@ -16,9 +16,12 @@ def cli_parser(app):
         parser.add_argument('--top1')
         parser.add_argument('--top2')
         parser.add_argument('files', nargs=2)
-    else:
+    elif app in ['stub', 'wrap']:
         parser.add_argument('--top')
         parser.add_argument('--suffix', default=f'_{app}')
+        parser.add_argument('--output')
+        parser.add_argument('file')
+    else:
         parser.add_argument('--output')
         parser.add_argument('file')
     return parser.parse_args()
