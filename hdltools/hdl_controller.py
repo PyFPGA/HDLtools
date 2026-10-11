@@ -1,18 +1,16 @@
 #
-# Copyright (C) 2025 HDLtools Project
+# Copyright (C) 2025-2026 HDLtools Project
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 """
 This module defines the HDLController class that orchestrates the entire flow
-from reading and sanitizing HDL code, parsing modules, and generating output
-HDL code using Jinja2 templates.
+from parsing modules, and generating output HDL code using Jinja2 templates.
 """
 
 import sys
 
-from hdltools.hdl_reader import HDLReader
 from hdltools.mod_parser import ModParser
 from hdltools.hdl_writer import HDLWriter
 
@@ -21,7 +19,6 @@ class HDLController:
     """A central controller to orchestrate the HDL processing tasks."""
 
     def __init__(self, template):
-        self.reader = HDLReader()
         self.parser = ModParser()
         self.writer = HDLWriter()
         self.template = template
@@ -30,12 +27,14 @@ class HDLController:
         """Generates HDL code from the input file."""
 
         try:
-            self.reader.read_file(filepath)
+            # Quick check to ensure the file exists and is readable
+            # before passing it to the slang driver.
+            with open(filepath, 'r', encoding='utf-8') as f:
+                f.read(1)
         except (OSError, UnicodeDecodeError):
-            self._error(f'file not found ({filepath})')
+            self._error(f'file not found or unreadable ({filepath})')
 
-        raw_code = self.reader.get_code()
-        self.parser.set_code(raw_code)
+        self.parser.set_file(filepath)
         self.parser.parse()
 
         modules = self.parser.get_names()
