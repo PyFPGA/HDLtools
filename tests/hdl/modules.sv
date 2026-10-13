@@ -35,8 +35,6 @@ endmodule
   Module with parameters
 */
 
-// `define DEFINE1 80
-
 module mod_param #(
   parameter              PARAM0,
   parameter int          PARAM1,
