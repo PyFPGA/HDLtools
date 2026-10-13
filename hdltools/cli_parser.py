@@ -22,6 +22,14 @@ def cli_parser(app=None):
         parser.add_argument('--suffix', default=f'_{app}')
         parser.add_argument('--output')
 
+    parser.add_argument(
+        '-D', '--define',
+        dest='defines',
+        action='append',
+        default=[],
+        help='Define macros for the SV preprocessor'
+    )
+
     if app == 'comp':
         parser.add_argument('files', nargs=2)
     else:

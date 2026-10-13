@@ -13,8 +13,7 @@ from hdltools.mod_parser import ModParser
 
 
 args = cli_parser()
-parser = ModParser(args.file)
-# parser.set_defines(["DATA_WIDTH=32", "FEATURE_ENABLED"])
+parser = ModParser(args.file, defines=args.defines)
 parser.parse()
 data = parser.get_modules()
 print(json.dumps(data, indent=4))
