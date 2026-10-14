@@ -1,10 +1,6 @@
 name: 'test'
 
-on:
-  push:
-    paths:
-      - 'hdltools/**'
-      - 'tests/**'
+on: push
 
 jobs:
   test:
@@ -21,6 +17,6 @@ jobs:
       with:
         python-version: ${{ matrix.pyver }}
     - name: Install dependencies
-      run: pip install pyslang
+      run: pip install pyslang jinja2
     - name: Run test
       run: make test
