@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.pyver }}
-    - name: Install dependencies
-      run: pip install pyslang jinja2
+    - name: Install
+      run: pip install -e .
     - name: Run test
       run: make test

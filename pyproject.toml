@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "HDLtools"
+description = "Scripts for automating HDL-related tasks"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Rodrigo A. Melo", email = "rodrigomelo9@gmail.com" },
+]
+dependencies = [
+    "pyslang",
+    "jinja2",
+]
+
+dynamic = ["version"]
+
+[project.scripts]
+genstub = "hdltools.apps.genstub:main"
+genwrap = "hdltools.apps.genwrap:main"
+modcomp = "hdltools.apps.modcomp:main"
+modjson = "hdltools.apps.modjson:main"
+
+[tool.hatch.version]
+# Le indicamos la ruta del archivo que contiene __version__
+path = "hdltools/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hdltools"]

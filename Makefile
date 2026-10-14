@@ -1,8 +1,5 @@
 #!/usr/bin/make
 
-CDIR := $(shell pwd)
-export PYTHONPATH := $(CDIR):$(PYTHONPATH)
-
 all: lint test
 
 lint:
@@ -11,10 +8,7 @@ lint:
 	git diff --check --cached
 
 test:
-	python3 hdltools/apps/genstub.py -h
-	python3 hdltools/apps/genwrap.py -h
-	python3 hdltools/apps/modcomp.py -h
-	python3 hdltools/apps/modjson.py -h
+	genstub -h && genwrap -h && modcomp -h && modjson -h
 
 clean:
 	py3clean .
