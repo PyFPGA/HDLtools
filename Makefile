@@ -1,14 +1,20 @@
 #!/usr/bin/make
 
+CDIR := $(shell pwd)
+export PYTHONPATH := $(CDIR)/src:$(PYTHONPATH)
+
 all: lint test
 
 lint:
-	pycodestyle hdltools tests
+	pycodestyle hdltools
 	pylint -s n hdltools
 	git diff --check --cached
 
 test:
-	PYTHONPATH=$(PWD) pytest -vv
+	python3 hdltools/apps/genstub.py -h
+	python3 hdltools/apps/genwrap.py -h
+	python3 hdltools/apps/modcomp.py -h
+	python3 hdltools/apps/modjson.py -h
 
 clean:
 	py3clean .

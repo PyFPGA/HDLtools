@@ -14,7 +14,7 @@ from hdltools.hdl_controller import HDLController
 
 
 args = cli_parser('comp')
-ctrl = HDLController('comp')
+ctrl = HDLController('comp', defines=args.defines)
 mod1 = ctrl.generate(args.files[0], args.top1)
 mod2 = ctrl.generate(args.files[1], args.top2)
 

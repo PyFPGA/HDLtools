@@ -1,48 +1,48 @@
 #
-# Copyright (C) 2025 HDLtools Project
+# Copyright (C) 2025-2026 HDLtools Project
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 """
-This module defines the HDLController class that orchestrates the entire flow
-from reading and sanitizing HDL code, parsing modules, and generating output
-HDL code using Jinja2 templates.
+This module defines the HDLController class that orchestrates SystemVerilog
+parsing (via pyslang) and output code generation (via Jinja2).
 """
 
 import sys
 
-from hdltools.hdl_reader import HDLReader
 from hdltools.mod_parser import ModParser
 from hdltools.hdl_writer import HDLWriter
 
 
 class HDLController:
-    """A central controller to orchestrate the HDL processing tasks."""
+    """Orchestrate SV parsing and template-based code generation tasks."""
 
-    def __init__(self, template):
-        self.reader = HDLReader()
-        self.parser = ModParser()
+    def __init__(self, template, defines=None):
+        """Initializes controller."""
+        self.parser = ModParser(defines=defines)
         self.writer = HDLWriter()
         self.template = template
 
     def generate(self, filepath, top=None, suffix=None):
-        """Generates HDL code from the input file."""
+        """Validates source, parses with slang, and renders output template."""
 
         try:
-            self.reader.read_file(filepath)
+            # Check to ensure the file is accessible
+            # before passing its path to the compiler driver.
+            with open(filepath, 'r', encoding='utf-8') as f:
+                f.read(1)
         except (OSError, UnicodeDecodeError):
-            self._error(f'file not found ({filepath})')
+            self._error(f'file not found or unreadable ({filepath})')
 
-        raw_code = self.reader.get_code()
-        self.parser.set_code(raw_code)
+        self.parser.set_file(filepath)
         self.parser.parse()
 
         modules = self.parser.get_names()
         if not modules:
-            self._error('module not found')
+            self._error('no modules found or parsing failed')
         if top and top not in modules:
-            self._error(f'top not found ({top})')
+            self._error(f'top module not found ({top})')
         if not top:
             top = modules[0]
 
@@ -54,7 +54,7 @@ class HDLController:
         return self.writer.get_code()
 
     def write(self, filepath):
-        """Writes the generated HDL code."""
+        """Writes the generated code to a file, or stdout if empty."""
         if not filepath:
             print(self.writer.get_code())
         else:
@@ -62,5 +62,6 @@ class HDLController:
 
     @staticmethod
     def _error(message, ecode=1):
+        """Logs an error message and terminates execution."""
         print(f'ERROR: {message}')
         sys.exit(ecode)

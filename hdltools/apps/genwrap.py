@@ -11,6 +11,6 @@ from hdltools.hdl_controller import HDLController
 
 
 args = cli_parser('wrap')
-ctrl = HDLController('wrap')
+ctrl = HDLController('wrap', defines=args.defines)
 ctrl.generate(args.file, args.top, args.suffix)
 ctrl.write(args.output)
