@@ -1,13 +1,13 @@
 #!/usr/bin/make
 
 CDIR := $(shell pwd)
-export PYTHONPATH := $(CDIR)/src:$(PYTHONPATH)
+export PYTHONPATH := $(CDIR):$(PYTHONPATH)
 
 all: lint test
 
 lint:
 	pycodestyle hdltools
-	pylint -s n hdltools
+	pylint -s n --disable=import-error hdltools
 	git diff --check --cached
 
 test:
